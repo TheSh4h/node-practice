@@ -1,13 +1,14 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const Blog = require('./models/blog');
 
 // express app
 const app = express();
 
 // connect to db
 const dbURI = 'mongodb+srv://haseebshah:test1234@cluster0.b1qbvue.mongodb.net/node-tuts?retryWrites=true&w=majority&appName=Cluster0'
-mongoose.connect(dbURI, { useNewURLParser: true, useUnifiedTopology: true })
+mongoose.connect(dbURI)
     .then((result) => app.listen(3000))
     .catch((err) => console.log(err));
 
@@ -17,6 +18,43 @@ app.set('view engine', 'ejs');
 // middleware & static files
 app.use(express.static('public'));
 app.use(morgan('dev'));
+
+// mongoose and mongo sandboxes routes
+app.get('/add-blog', (req, res) => {
+    const blog = new Blog ({
+        title: 'new blog 2',
+        snippet: 'about my new blog',
+        body: 'more about my new blog'
+    });
+
+    blog.save()
+    .then((result) => {
+        res.send(result)
+    })
+    .catch((err) => {
+        console.log(err);
+    })
+})
+
+app.get('/all-blogs', (req, res) => {
+    Blog.find()
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+})
+
+app.get('/single-blog', (req, res) => {
+    Blog.findById('66577f363cb715d9117d2aa1')
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+})
 
 app.get('/', (req, res) => {
     const blogs = [
