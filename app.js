@@ -9,7 +9,7 @@ const app = express();
 // connect to db
 const dbURI = 'mongodb+srv://haseebshah:test1234@cluster0.b1qbvue.mongodb.net/node-tuts?retryWrites=true&w=majority&appName=Cluster0'
 mongoose.connect(dbURI)
-    .then((result) => app.listen(3000))
+    .then((result) => app.listen(3001))
     .catch((err) => console.log(err));
 
 // register view engine
@@ -52,31 +52,31 @@ app.post('/blogs', (req, res) => {
         })
 })
 
+app.get('/blogs/create', (req, res) => {
+    res.render('create' , { title: 'Create A New Blog'});
+})
+
 app.get('/blogs/:id', (req, res) => {
     const id = req.params.id;
     Blog.findById(id)
         .then(result => {
-        res.render('details', { blog: result, title: 'Blog Details'})
+        res.render('details', { blog: result, title: 'Blog Details' })
         })
         .catch(err => {
             console.log(err);
         })
 })
 
-app.get('/blogs/create', (req, res) => {
-    res.render('create' , { title: 'Create A New Blog'});
-})
-
 app.delete('/blogs/:id', (req, res) => {
     const id = req.params.id;
 
     Blog.findByIdAndDelete(id)
-    .then(result => {
-        res.json({ redirect: '/blogs' })
-    })
-    .then(err => {
-        console.log(err);
-    });
+        .then(result => {
+            res.json({ redirect: '/blogs' })
+        })
+        .then(err => {
+            console.log(err);
+        });
 });
 
 // 404 page
